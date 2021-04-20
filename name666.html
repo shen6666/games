@@ -5,7 +5,7 @@
 		<title></title>
 		<style type="text/css">
 			body{
-				background-color: #277;
+				background-image: url(https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.huabanimg.com%2F4d7668ac456d94026181040101170374611fcd723296f-hbpmm5_fw658&refer=http%3A%2F%2Fhbimg.huabanimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1621515229&t=dcf520b439bdb6f2b4653b3d25c53133);
 			}
 			*{
 				margin: 0;
@@ -18,7 +18,7 @@
 				margin-top: 50px;
 				width: 600px;
 				height: 1000px;
-				background-color: #255;
+				/* background-color: #255; */
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
@@ -26,11 +26,12 @@
 			.father>div{
 				font-size: 50px;
 				text-align: center;
-				background-color: #857;
 			}
 			.title{
+				margin-top:50px ;
 				text-align: center;
 				font-size: 66px;
+				color: white;
 			}
 			.btn{
 				font-size: 60px;
@@ -47,7 +48,7 @@
 		</style>
 	</head>
 	<body>
-		<h1 class="title">中奖结果</h1>
+		<h1 class="title">大型断片现场</h1>
 		<div class="father">
 			<div>111</div>
 			<div>222</div>
@@ -70,7 +71,7 @@
 					btn.innerText="停止"
 					intvail = setInterval(function(){
 						for(var i = 0;i<father.length;i++){
-							father[i].style.backgroundColor = "#857";
+							father[i].style.backgroundColor = "#FDCB0B";
 						}
 						num = Math.floor(Math.random()*8);
 						father[num].style.backgroundColor="#fff";
