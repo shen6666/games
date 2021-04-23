@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇</title>
+    <script src='https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js'></script>
+    <style>
+        table {
+            border: 1px solid hotpink;
+        }
+
+        table td {
+            width: 20px;
+            height: 20px;
+        }
+
+        .numerousfood {
+            background-color: red;
+        }
+
+        .sank {
+            background: greenyellow;
+        }
+
+        .sanka {
+            background-color: pink;
+            border-radius: 180%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='map'></div>
+    <button>开始</button>
+</body>
+<script>
+    class myedacity {
+        constructor(map, max = 20, sank, sanka, sj) {
+            this.map = document.getElementById(map);
+            this.tds = document.getElementsByTagName('td');
+            this.but = document.getElementsByTagName('button');
+            this.sank = sank;
+            this.sanka = sanka;
+            this.sj = sj;
+            this.size = max;
+            this.timesj = false;
+            this.timesja = false;
+            this.chong = false;
+            this.x = 0;
+            this.y = 1;
+            this.table = [];
+            this.sankeshen = [];
+            this.foods = [];  
+            this.random(2, this.size - 1);
+            this.initializetable();
+            this.sanke();
+            this.sankea(); 
+            this.clickbutton();
+        }
+        random(min, max) {
+            function random(min, max) {
+                return Math.ceil(Math.random() * (max - min + 1) + min - 1);
+            }
+            this.sui = random(min, max);
+        }
+        initializetable() {
+            this.table.push('<table align="center">');
+            for (let h = 1; h <= this.size; h++) {
+                this.table.push('<tr>');
+                for (let l = 1; l <= this.size; l++) {
+                    this.table.push('<td id="box_' + h + '_' + l + '"> </td>');
+                }
+                this.table.push('</tr>');
+            }
+            this.table.push('</table>')
+            $(this.map).html(this.table.join(''));
+        }
+        sanke() {
+            if (this.sui <= 3) {
+                this.sui = 6;
+            }
+            for (let i = 2; i <= 4; i++) {
+                this.sankeshen.push([this.sui, i]);
+            }
+        }
+        sankea() {
+            let that = this;
+            $(this.tds).removeClass(this.sank);
+            $(this.tds).removeClass(this.sanka);
+            for (let i = 0; i < this.sankeshen.length; i++) {
+                $('#box_' + that.sankeshen[i][0] + '_' + that.sankeshen[i][1]).addClass('sank');
+            }
+            $('#box_' + this.sankeshen[this.sankeshen.length - 1][0] + '_' + this.sankeshen[this.sankeshen.length -
+                1][1]).addClass('sanka');
+
+        }
+        time() {
+            let that = this;
+            if (that.timesj) {
+                return false
+            };
+            this.timesj = setInterval(() => {
+                that.oneself();
+                let zx = that.sankeshen[that.sankeshen.length - 1][0] + that.x
+                let zy = that.sankeshen[that.sankeshen.length - 1][1] + that.y;
+                if (that.sankeshen[that.sankeshen.length - 1][1] == 1 || that.sankeshen[that.sankeshen
+                        .length - 1][1] == that.size || that.sankeshen[that.sankeshen.length - 1][0] == that
+                    .size || that.sankeshen[that.sankeshen.length - 1][0] == 1) {
+                    clearInterval(that.timesj);
+                    // alert('请重新开始');
+                    that.chong = true;
+                    that.timesj = false;
+                    that.sankea();
+                    return false;
+                }
+                if (zx == that.foods[0] && zy == that.foods[1]) {
+                    that.disposable();
+                } else {
+                    that.sankeshen.shift();
+                }
+                that.sankeshen.push([zx, zy]);
+                that.sankea();
+            }, that.sj)
+        }
+        keyboard() {
+            this.time();
+            let that = this;
+            $(window).keydown((e) => {
+                switch (e.which) {
+                    case 37: //左 
+                        if (that.x != 0 && that.y != 1) {
+                            that.x = 0;
+                            that.y = -1;
+                        }
+                        break;
+                    case 38: //上 
+                        if (that.x != 1 && that.y != 0) {
+                            that.x = -1;
+                            that.y = 0;
+                        }
+                        break;
+                    case 39: //右 
+                        if (that.x != 0 && that.y != -1) {
+                            that.x = 0;
+                            that.y = 1;
+                        }
+                        break;
+                    case 40: //下 
+                        if (that.x != -1 && that.y != 0) {
+                            that.x = 1;
+                            that.y = 0;
+                        }
+                        break;
+                }
+            })
+        }
+        clickbutton() {
+            let that = this;
+            $(this.but).click(() => {
+                // alert('默认向右移动!');
+                that.food();
+                that.keyboard();
+                if (that.chong) {
+                    that.x = 0;
+                    that.y = 1;
+                    that.chong = false;
+                    that.sankeshen = [];
+                    that.random(1, that.size);
+                    that.sanke();
+                    that.sankea();
+                    setInterval(that.time());
+                }
+            })
+        }
+        food() {  
+            let that = this;
+            $(that.tds).removeClass('numerousfood');
+            that.foods = [];
+            that.random(2, that.size - 1);
+            let suia = that.sui;
+            that.random(2, that.size - 1);
+            let suib = that.sui;
+            that.foods.push(suia);
+            that.foods.push(suib); 
+            this.pdss();  
+            $('#box_' + suia + '_' + suib).addClass('numerousfood');
+        }
+        disposable() {
+            let that = this;
+            setTimeout(() => {
+                that.food();
+            }, 100)
+        }
+        oneself() {
+            let a = [...this.sankeshen];
+            let b = [];
+            a.forEach((v, k) => {
+                b.push(String(v));
+            })
+            let c = new Set(b);
+            let d = [...c]
+            if (a.length !== d.length) {
+                clearInterval(this.timesj);
+                // alert('请重新开始');
+                this.chong = true;
+                this.timesj = false;
+                this.sankea();
+                return false;
+            }
+        }  
+        pdss(){ 
+            let make=false;
+            let that = this; 
+            for(var i in that.sankeshen){  
+				if(that.sankeshen[i][0] == that.foods[0] && that.sankeshen[i][1] == that.foods[1]){ 
+					make = true;
+				}
+			} 
+            if(make){  
+                make=false;
+                that.food();
+                return false;
+            } 
+        }
+    } 
+    let forget = new myedacity('map', 20, 'sank', 'sanka', 200);
+</script> 
+</html>
