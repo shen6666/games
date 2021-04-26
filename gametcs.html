@@ -1,228 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh_CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
     <title>贪吃蛇</title>
-    <script src='https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js'></script>
     <style>
-        table {
-            border: 1px solid hotpink;
+        #playground{
+            border-collapse: collapse;
+            margin: auto;
+        }
+        #playground td{
+            width: 15px;
+            height: 15px;
+            border: 1px solid gainsboro;
         }
 
-        table td {
-            width: 20px;
-            height: 20px;
+        #score_number{
+            color: tomato;
+            font-size: larger;
+        }
+        .black{
+            background: black;
         }
 
-        .numerousfood {
-            background-color: red;
+        .white{
+            background: white;
         }
 
-        .sank {
-            background: greenyellow;
+        .food{
+        	background: greenyellow;
         }
 
-        .sanka {
-            background-color: pink;
-            border-radius: 180%;
-        }
     </style>
 </head>
-
 <body>
-    <div id='map'></div>
-    <button>开始</button>
-</body>
-<script>
-    class myedacity {
-        constructor(map, max = 20, sank, sanka, sj) {
-            this.map = document.getElementById(map);
-            this.tds = document.getElementsByTagName('td');
-            this.but = document.getElementsByTagName('button');
-            this.sank = sank;
-            this.sanka = sanka;
-            this.sj = sj;
-            this.size = max;
-            this.timesj = false;
-            this.timesja = false;
-            this.chong = false;
-            this.x = 0;
-            this.y = 1;
-            this.table = [];
-            this.sankeshen = [];
-            this.foods = [];  
-            this.random(2, this.size - 1);
-            this.initializetable();
-            this.sanke();
-            this.sankea(); 
-            this.clickbutton();
-        }
-        random(min, max) {
-            function random(min, max) {
-                return Math.ceil(Math.random() * (max - min + 1) + min - 1);
-            }
-            this.sui = random(min, max);
-        }
-        initializetable() {
-            this.table.push('<table align="center">');
-            for (let h = 1; h <= this.size; h++) {
-                this.table.push('<tr>');
-                for (let l = 1; l <= this.size; l++) {
-                    this.table.push('<td id="box_' + h + '_' + l + '"> </td>');
-                }
-                this.table.push('</tr>');
-            }
-            this.table.push('</table>')
-            $(this.map).html(this.table.join(''));
-        }
-        sanke() {
-            if (this.sui <= 3) {
-                this.sui = 6;
-            }
-            for (let i = 2; i <= 4; i++) {
-                this.sankeshen.push([this.sui, i]);
-            }
-        }
-        sankea() {
-            let that = this;
-            $(this.tds).removeClass(this.sank);
-            $(this.tds).removeClass(this.sanka);
-            for (let i = 0; i < this.sankeshen.length; i++) {
-                $('#box_' + that.sankeshen[i][0] + '_' + that.sankeshen[i][1]).addClass('sank');
-            }
-            $('#box_' + this.sankeshen[this.sankeshen.length - 1][0] + '_' + this.sankeshen[this.sankeshen.length -
-                1][1]).addClass('sanka');
+    <p id="score">得分：<span id="score_number">0</span></p>
+    <table cellpadding="0" cellspacing="0" id="playground"></table>
+    
+    <script>
+        // 地图宽
+var map_width = 30;
+// 游戏定时器
+var timer;
+// 蛇对象
+var snake;
 
-        }
-        time() {
-            let that = this;
-            if (that.timesj) {
-                return false
-            };
-            this.timesj = setInterval(() => {
-                that.oneself();
-                let zx = that.sankeshen[that.sankeshen.length - 1][0] + that.x
-                let zy = that.sankeshen[that.sankeshen.length - 1][1] + that.y;
-                if (that.sankeshen[that.sankeshen.length - 1][1] == 1 || that.sankeshen[that.sankeshen
-                        .length - 1][1] == that.size || that.sankeshen[that.sankeshen.length - 1][0] == that
-                    .size || that.sankeshen[that.sankeshen.length - 1][0] == 1) {
-                    clearInterval(that.timesj);
-                    // alert('请重新开始');
-                    that.chong = true;
-                    that.timesj = false;
-                    that.sankea();
-                    return false;
-                }
-                if (zx == that.foods[0] && zy == that.foods[1]) {
-                    that.disposable();
-                } else {
-                    that.sankeshen.shift();
-                }
-                that.sankeshen.push([zx, zy]);
-                that.sankea();
-            }, that.sj)
-        }
-        keyboard() {
-            this.time();
-            let that = this;
-            $(window).keydown((e) => {
-                switch (e.which) {
-                    case 37: //左 
-                        if (that.x != 0 && that.y != 1) {
-                            that.x = 0;
-                            that.y = -1;
-                        }
-                        break;
-                    case 38: //上 
-                        if (that.x != 1 && that.y != 0) {
-                            that.x = -1;
-                            that.y = 0;
-                        }
-                        break;
-                    case 39: //右 
-                        if (that.x != 0 && that.y != -1) {
-                            that.x = 0;
-                            that.y = 1;
-                        }
-                        break;
-                    case 40: //下 
-                        if (that.x != -1 && that.y != 0) {
-                            that.x = 1;
-                            that.y = 0;
-                        }
-                        break;
-                }
-            })
-        }
-        clickbutton() {
-            let that = this;
-            $(this.but).click(() => {
-                // alert('默认向右移动!');
-                that.food();
-                that.keyboard();
-                if (that.chong) {
-                    that.x = 0;
-                    that.y = 1;
-                    that.chong = false;
-                    that.sankeshen = [];
-                    that.random(1, that.size);
-                    that.sanke();
-                    that.sankea();
-                    setInterval(that.time());
-                }
-            })
-        }
-        food() {  
-            let that = this;
-            $(that.tds).removeClass('numerousfood');
-            that.foods = [];
-            that.random(2, that.size - 1);
-            let suia = that.sui;
-            that.random(2, that.size - 1);
-            let suib = that.sui;
-            that.foods.push(suia);
-            that.foods.push(suib); 
-            this.pdss();  
-            $('#box_' + suia + '_' + suib).addClass('numerousfood');
-        }
-        disposable() {
-            let that = this;
-            setTimeout(() => {
-                that.food();
-            }, 100)
-        }
-        oneself() {
-            let a = [...this.sankeshen];
-            let b = [];
-            a.forEach((v, k) => {
-                b.push(String(v));
-            })
-            let c = new Set(b);
-            let d = [...c]
-            if (a.length !== d.length) {
-                clearInterval(this.timesj);
-                // alert('请重新开始');
-                this.chong = true;
-                this.timesj = false;
-                this.sankea();
-                return false;
-            }
-        }  
-        pdss(){ 
-            let make=false;
-            let that = this; 
-            for(var i in that.sankeshen){  
-				if(that.sankeshen[i][0] == that.foods[0] && that.sankeshen[i][1] == that.foods[1]){ 
-					make = true;
+function setClass(id, cn) {
+	$(id).removeClass();
+	$(id).addClass(cn);
+}
+
+// 产生食物
+function createFood() {
+	let x, y;
+	let idName;
+	do {
+		x = Math.floor(Math.random() * map_width);
+		y = Math.floor(Math.random() * map_width);
+		idName = '#' + x + '_' + y;
+	} while ($(idName).hasClass('black'));
+	setClass(idName, 'food');
+}
+// 创建蛇对象
+function Snake() {
+	// 初始长度3
+	this.snakeBody = [
+		[1, 3],
+		[1, 2],
+		[1, 1]
+	];
+	// 初始方向
+	this.direction = "right";
+
+	// 初始化小蛇
+	for (let i = 0; i < this.snakeBody.length; ++i) {
+		let x = this.snakeBody[i][0];
+		let y = this.snakeBody[i][1];
+		let idName = '#' + x + '_' + y;
+		$(idName).removeClass();
+		$(idName).addClass('black');
+	}
+
+	this.autoMove = function() {
+		function move() {
+			let x = snake.snakeBody[0][0];
+			let y = snake.snakeBody[0][1];
+
+			switch (snake.direction) {
+				case 'up':
+					x -= 1;
+					break;
+				case 'down':
+					x += 1;
+					break;
+				case 'left':
+					y -= 1;
+					break;
+				case 'right':
+					y += 1;
+					break;
+			}
+			let idName = "#" + x + "_" + y;
+			// 判断撞墙或者吃到自己身体
+			if (x < 0 || x >= map_width || y < 0 || y >= map_width || $(idName).hasClass('black')) {
+				alert("游戏结束");
+				clearInterval(timer);
+				return;
+			}
+			// 蛇身前移
+			snake.snakeBody.unshift([x, y]);
+			// 吃到食物
+			if ($(idName).hasClass('food')) {
+				$(idName).removeClass('food');
+				// 更新分数
+				let score = parseInt($("#score_number").text()) + 10;
+				$("#score_number").text(score);
+				// 0.5秒后出现新的食物
+				setTimeout(createFood, 0.5);
+			} else {
+				// 没吃到食物删除尾巴
+				let p = snake.snakeBody.pop();
+				let popIdName = '#' + p[0] + '_' + p[1];
+				setClass(popIdName, 'white');
+			}
+			// 新位置为蛇身
+			setClass(idName, 'black');
+		}
+		// 200ms移动一次
+		timer = setInterval(move, 200);
+	}
+}
+
+// 网页加载时执行
+window.onload = function() {
+	// 创建地图
+	for (let i = 0; i < this.map_width; ++i) {
+		let tr = document.createElement("tr");
+		for (let j = 0; j < this.map_width; ++j) {
+			let td = document.createElement('td');
+			td.setAttribute("class", "white");
+			td.setAttribute('id', i + '_' + j);
+			tr.appendChild(td);
+		}
+		$("#playground").append(tr);
+	}
+
+	// 1秒后创造第一个食物
+	setTimeout(createFood, 1000);
+	// 创造蛇对象
+	snake = new Snake();
+	snake.autoMove();
+
+	// 全局按键事件
+	$(document).keydown(function(event) {
+		switch (event.keyCode) {
+			case 37:
+				if (snake.direction != 'right') {
+					snake.direction = "left";
 				}
-			} 
-            if(make){  
-                make=false;
-                that.food();
-                return false;
-            } 
-        }
-    } 
-    let forget = new myedacity('map', 20, 'sank', 'sanka', 200);
-</script> 
+				break;
+			case 39:
+				if (snake.direction != 'left') {
+					snake.direction = "right";
+				}
+				break;
+			case 38:
+				if (snake.direction != 'down') {
+					snake.direction = "up";
+				}
+				break;
+			case 40:
+				if (snake.direction != 'up') {
+					snake.direction = "down";
+				}
+				break;
+			case 32:
+				// 空格暂停
+				if (timer != null) {
+					clearInterval(timer);
+					timer = null;
+				} else {
+					snake.autoMove();
+				}
+		}
+		console.log("蛇(" + snake.snakeBody[0][0] + "," + snake.snakeBody[0][1] + ")的方向: " + snake.direction);
+	});
+}
+
+    </script>
+</body>
 </html>
