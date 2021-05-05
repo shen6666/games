@@ -37,7 +37,6 @@
                     // 数据是保存在 异步对象的 属性中
                     console.log(JSON.parse(request.responseText));
                     let obj = JSON.parse(request.responseText);
-                    alert(obj.msg);
                     if(obj.code == 200){
                         location.href="./demo01.html"
                     }
