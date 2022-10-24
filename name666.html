@@ -50,17 +50,18 @@
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
-		<h1 id="title" class="title">大型断片现场</h1>
+		<h1 id="title" class="title">抽大奖</h1>
 		<div class="father">
-			<div>111</div>
-			<div>222</div>
-			<div>333</div>
-			<div>444</div>
-			<div>555</div>
-			<div>666</div>
-			<div>777</div>
-			<div>848</div>
-			<div>848888</div>
+			<div>iPhone14</div>
+			<div>iPhone14Pro</div>
+			<div>iPhone14ProMax</div>
+			<div>iPhone13</div>
+			<div>iPhone13Pro</div>
+			<div>iPhone13ProMax</div>
+			<div>iPhone12</div>
+			<div>iPhone12Pro</div>
+			<div>iPhone12ProMax</div>
+			<div>谢谢参与</div>
 		</div>
 		<div class="btn" id="btn" onclick="updatetime()">开始</div>
 		<script type="text/javascript">
@@ -87,6 +88,7 @@
 						let c5 = Math.floor(Math.random()*10);
 						let c6 = Math.floor(Math.random()*10);
 						title.style.color = "#"+c1+c2+c3+c4+c5+c6;
+						// father[num].style.backgroundColor="#fff";
 						father[num].style.backgroundColor="#fff";
 					},1)
 					flag = 1;
@@ -101,6 +103,10 @@
 					console.log(father.length);
 					btn.innerText="开始"
 					clearInterval(intvail);
+					for(var i = 0;i<father.length;i++){
+						father[i].style.backgroundColor = "#FDCB0B";
+					}
+					father[9].style.backgroundColor="#fff";
 					flag = 0;
 				}
 			}
