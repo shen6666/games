@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    /* 游戏布局样式 */
+    .bigBox {
+      background-color: rgb(163, 159, 159);
+      width: 40%;
+      margin: 5% auto;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #reset {
+      width: 100px;
+      font-size: 15px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 30px auto;
+    }
+
+    td {
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      vertical-align: middle;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #333;
+      border: none;
+    }
+
+    /* 控制面板样式 */
+    #controls {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bigBox">
+    <div id="controls">
+      <form>
+        <label for="level">难度级别：</label>
+        <select id="level">
+          <option value="easy">简单</option>
+          <option value="medium">中等</option>
+          <option value="hard">困难</option>
+        </select>
+        <button id="reset">重新开始</button>
+      </form>
+    </div>
+
+    <table id="board"></table>
+  </div>
+
+
+</body>
+
+<script>
+//const config = { ... }：这是一个对象，用于存储游戏的参数配置。根据难度级别（简单、中等、困难），配置了每个级别的行数、列数和地雷数量。
+
+// 变量声明和初始化：声明了一系列变量用于存储游戏所需的各种信息，如游戏界面元素、游戏状态、地雷数量等。
+
+// 事件监听器：通过监听重新开始按钮（reset）和难度级别选择器（level）的点击事件或改变事件，调用相应的初始化函数（init()）来重新开始游戏或改变游戏难度。
+
+// init()函数：该函数用于初始化游戏。根据选择的难度级别，设置相应的行数、列数和地雷数量。然后，根据行数和列数动态生成游戏的表格布局，并为每个单元格（方格）添加按钮元素。最后，初始化地雷的位置，并更新地雷数量的显示。
+
+// clickCell()函数：该函数用于处理玩家点击单元格（方格）的操作。根据点击的单元格的位置，判断是否有地雷，如果有地雷则显示所有地雷并结束游戏；如果没有地雷，则根据周围的地雷数量显示相应的数字或递归地显示周围的方格。
+
+// revealNeighbors()函数：该函数用于递归地展开周围的方格，直到周围有地雷或有数字。
+
+// countMinesAround()函数：该函数用于计算给定方格周围的地雷数量。
+
+// revealMines()函数：该函数用于显示所有的地雷，将地雷方格的背景颜色设置为红色。
+
+// updateMinesCount()函数：该函数用于更新剩余地雷数量的显示。
+
+// showGameOver()函数：该函数用于展示游戏结束的提示信息，根据参数win的值判断是胜利还是失败。
+
+// checkWin()函数：该函数用于检查玩家是否已经胜利，遍历所有方格，如果有任何未揭示的非地雷方格，则返回false，否则返回true。
+
+// init()函数调用：在脚本末尾，调用init()函数来初始化游戏。
+  // 游戏参数配置
+  const config = {
+    easy: {
+      rows: 8,
+      cols: 8,
+      mines: 10,
+    },
+    medium: {
+      rows: 10,
+      cols: 10,
+      mines: 20,
+    },
+    hard: {
+      rows: 12,
+      cols: 12,
+      mines: 30,
+    },
+  };
+  // 初始化游戏
+  let board = document.getElementById("board");
+  let level = document.getElementById("level");
+  let reset = document.getElementById("reset");
+  let cells = [];
+  let gameover = false;
+  let minesLeft = 0;
+  let minesCount = 0;
+  let rows, cols, mines;
+
+  reset.addEventListener("click", init);
+
+  level.addEventListener("change", function () {
+    init();
+  });
+
+  function init () {
+    // 初始化游戏参数
+    let levelConfig = config[level.value];
+    rows = levelConfig.rows;
+    cols = levelConfig.cols;
+    mines = levelConfig.mines;
+    minesLeft = mines;
+    minesCount = 0;
+    gameover = false;
+    // 初始化游戏布局
+    board.innerHTML = "";
+    cells = [];
+    for (let i = 0; i < rows; i++) {
+      let row = [];
+      let tr = document.createElement("tr");
+      for (let j = 0; j < cols; j++) {
+        let td = document.createElement("td");
+        let button = document.createElement("button");
+        button.addEventListener("click", function () {
+          if (!gameover) {
+            clickCell(i, j);
+          }
+        });
+        td.appendChild(button);
+        tr.appendChild(td);
+        row.push({ button: button, hasMine: false, revealed: false });
+      }
+      cells.push(row);
+      board.appendChild(tr);
+    }
+    // 初始化地雷
+    for (let i = 0; i < mines; i++) {
+      let row, col;
+      do {
+        row = Math.floor(Math.random() * rows);
+        col = Math.floor(Math.random() * cols);
+      } while (cells[row][col].hasMine);
+      cells[row][col].hasMine = true;
+    }
+    // 更新地雷数目显示
+    updateMinesCount();
+  }
+
+  function clickCell (row, col) {
+    let cell = cells[row][col];
+    if (cell.revealed) {
+      return;
+    }
+    if (cell.hasMine) {
+      revealMines();
+      showGameOver(false);
+      return;
+    }
+    cell.revealed = true;
+    cell.button.style.backgroundColor = "#ddd";
+    let minesAround = countMinesAround(row, col);
+    if (minesAround > 0) {
+      cell.button.textContent = minesAround;
+    } else {
+      revealNeighbors(row, col);
+    }
+    if (checkWin()) {
+      showGameOver(true);
+    }
+  }
+
+  function revealNeighbors (row, col) {
+    for (let i = row - 1; i <= row + 1; i++) {
+      for (let j = col - 1; j <= col + 1; j++) {
+        if (i >= 0 && i < rows && j >= 0 && j < cols && !(i == row && j == col)) {
+          clickCell(i, j);
+        }
+      }
+    }
+  }
+
+  function countMinesAround (row, col) {
+    let count = 0;
+    for (let i = row - 1; i <= row + 1; i++) {
+      for (let j = col - 1; j <= col + 1; j++) {
+        if (i >= 0 && i < rows && j >= 0 && j < cols && cells[i][j].hasMine) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+
+  function revealMines () {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (cells[i][j].hasMine) {
+          cells[i][j].button.style.backgroundColor = "#f00";
+        }
+      }
+    }
+  }
+
+  function updateMinesCount () {
+    console.log('这是哈哈', minesLeft)
+    // minesCountElem.textContent = minesLeft;
+  }
+
+  function showGameOver (win) {
+    gameover = true;
+    let message = win ? "You Win!" : "You Lose!";
+    alert(message);
+  }
+
+  function checkWin () {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        let cell = cells[i][j];
+        if (!cell.hasMine && !cell.revealed) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  init();
+
+</script>
+
+</html>
+
