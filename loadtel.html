@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <!-- <input type="text"> -->
+        <button @click="handleTel">拨号</button>
+        <div v-for="(item,index) in telArr" :key="index">{{item}}</div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    telArr: [13971930049, 13939291959, 13451299909, 13929229199, 13477309912],
+                }
+            },
+            methods: {
+                handleTel() {
+
+                    let link = document.createElement('a');
+                    let phoneNumber = this.telArr[0]
+                    this.telArr.splice(0,1)
+                    link.href = 'tel:' + phoneNumber;
+                    link.click()
+                },
+                createPhoneNumberLink(phoneNumber) {
+                    var link = document.createElement('a');
+                    link.href = 'tel:' + phoneNumber;
+                    link.textContent = '拨打电话';
+                    document.body.appendChild(link); // 或者添加到任何其他元素中
+                }
+
+                // 使用示例
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
