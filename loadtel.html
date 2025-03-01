@@ -5,44 +5,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 
 <body>
     <div id="app">
-        <!-- <input type="text"> -->
-        <button @click="handleTel">拨号</button>
+        <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="telInput"></el-input>
+        <el-button type="primary" @click="addTel">添加号码</el-button>
+        <el-button type="success" @click="handleTel">拨号</el-button>
         <div v-for="(item,index) in telArr" :key="index">{{item}}</div>
     </div>
-
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
-        const { createApp } = Vue
-
-        createApp({
+        var app = new Vue({
+            el: '#app',
             data() {
                 return {
-                    telArr: [13971930049, 13939291959, 13451299909, 13929229199, 13477309912],
+                    telArr: [],
+                    telInput: ''
+                }
+            },
+            created() {
+                let telArr = localStorage.getItem('telArr')
+                if (telArr) {
+                    this.telArr = JSON.parse(telArr)
                 }
             },
             methods: {
+                addTel() {
+                    if (this.telInput.trim()) {
+                        let val = this.telInput.trim().split("\n");
+                        this.telArr = this.telArr.concat(val)
+                        localStorage.setItem('telArr', JSON.stringify(this.telArr))
+                        this.telInput = ''
+                        console.log("telArr---", this.telArr);
+                    }
+                },
                 handleTel() {
-
                     let link = document.createElement('a');
                     let phoneNumber = this.telArr[0]
-                    this.telArr.splice(0,1)
+                    this.telArr.splice(0, 1)
+                    localStorage.setItem('telArr', JSON.stringify(this.telArr))
                     link.href = 'tel:' + phoneNumber;
                     link.click()
                 },
-                createPhoneNumberLink(phoneNumber) {
-                    var link = document.createElement('a');
-                    link.href = 'tel:' + phoneNumber;
-                    link.textContent = '拨打电话';
-                    document.body.appendChild(link); // 或者添加到任何其他元素中
-                }
-
-                // 使用示例
             }
-        }).mount('#app')
+        })
     </script>
 </body>
 
