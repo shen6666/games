@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <style>
+      body {
+        background-color: #1e1e1e;
+      }
+      .main {
+        width: 500px;
+        border: 2px solid red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="main">
+        <el-button @click="showRule = !showRule" type="success"
+          >{{ showRule ? "隐藏计算规则" : "显示计算规则" }}</el-button
+        >
+        <el-image
+          v-if="showRule"
+          src="https://ncstatic.clewm.net/rsrc/2025/0305/15/e699b4d1d6c45ccce40941f810e00385.png"
+        ></el-image>
+        <br />
+        <el-input type="number" placeholder="输入业绩自动算总工资" v-model="value" style="width: 200px"></el-input>
+        <div style="color: #fff">总工资：{{ getNum }}</div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+      var app = new Vue({
+        el: '#app',
+        data() {
+          return {
+            showRule: false,
+            value: 0,
+          }
+        },
+        computed: {
+          getNum() {
+            return this.sumData(this.value)
+          },
+        },
+        methods: {
+          sumData(num) {
+            if (num >= 1 && num < 15001) {
+              return num * 0.15 + 2800
+            } else if (num >= 15001 && num < 20001) {
+              return num * 0.2 + 2800 + 1000 + 500
+            } else if (num >= 20001 && num < 25000) {
+              return num * 0.22 + 2800 + 1000 + 800
+            } else if (num >= 25000 && num < 35000) {
+              return num * 0.24 + 2800 + 1000 + 1200
+            } else if (num >= 35000 && num < 50000) {
+              return num * 0.28 + 2800 + 1000 + 1500
+            } else if (num >= 50000) {
+              return num * 0.28 + 2800 + 1000 + 2000
+            }
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
